@@ -43,10 +43,6 @@ print_info () {
     echo -e "${GREEN} [INFO]${END} $@"
 }
 
-print_step () {
-    echo -e "${MAGENTA} >>>>>>>>>>${END} $@"
-}
-
 print_error () {
     echo -e "${RED} [ERROR]${END} $@"
 }
@@ -54,6 +50,15 @@ print_error () {
 print_warn () {
     echo -e "${YELLOW} [WARN]${END} $@"
 }
+
+print_step () {
+    echo -e "${MAGENTA} >>>${END} $@"
+}
+
+print_sub_step () {
+    echo -e "${MAGENTA} >>>>>>${END} $@"
+}
+
 
 usage () {
     local USAGE
@@ -201,23 +206,23 @@ esac
 #
 
 if [[ "${sync_pillars}" == true ]]; then
-    print_info "Syncing pillars"
+    print_step "Syncing pillars"
 
     # Create pillars folder if needed
     mkdir -p "${PILLARS_DST_DIR}"
 
     # Disable pillars
-    print_step "Disable pillars"
+    print_sub_step "Disable pillars"
 
     qubesctl top.disable "${SALT_ROOT}" pillar=true
 
     # Clean up pillars
-    print_step "Clean pillars"
+    print_sub_step "Clean pillars"
 
     rm -fr "${PILLARS_DST_DIR}/${SALT_ROOT}"
 
     # Retrieve pillars
-    print_step "Retrieve pillars"
+    print_sub_step "Retrieve pillars"
 
     PILLARS_SRC_DIR="${SRC_DIR}/${PILLARS_FOLDER}"
     PILLARS_ARCHIVE="${PILLARS_DST_DIR}/${SALT_ROOT}.tgz"
@@ -226,14 +231,14 @@ if [[ "${sync_pillars}" == true ]]; then
     tar xzf "${PILLARS_ARCHIVE}" -C "${PILLARS_DST_DIR}" && rm "${PILLARS_ARCHIVE}"
 
     # Enable pillars
-    print_step "Enable pillars"
+    print_sub_step "Enable pillars"
 
     qubesctl top.enable "${SALT_ROOT}" pillar=true
 
 fi
 
 if [[ "${sync_formulas}" == true ]]; then
-    print_info "Syncing formulas"
+    print_step "Syncing formulas"
 
     # Create formulas folder if needed
     mkdir -p "${FORMULAS_DST_DIR}"
@@ -242,17 +247,17 @@ if [[ "${sync_formulas}" == true ]]; then
     FORMULA_CONFIG="${SALT_CONF_FOLDER}/minion.d/${SALT_ROOT}.conf"
 
     # Disable formulas
-    print_step "Disable formulas"
+    print_sub_step "Disable formulas"
 
     rm -fr "${FORMULA_CONFIG}"
 
     # Clean up formulas
-    print_step "Clean formulas"
+    print_sub_step "Clean formulas"
 
     rm -fr "${FORMULAS_DST_DIR}/${SALT_ROOT}"
 
     # Retrieve formulas
-    print_step "Retrieve formulas"
+    print_sub_step "Retrieve formulas"
 
     FORMULAS_SRC_DIR="${SRC_DIR}/${FORMULAS_FOLDER}"
     FORMULAS_ARCHIVE="${FORMULAS_DST_DIR}/${SALT_ROOT}.tgz"
@@ -261,7 +266,7 @@ if [[ "${sync_formulas}" == true ]]; then
     tar xzf "${FORMULAS_ARCHIVE}" -C "${FORMULAS_DST_DIR}" && rm "${FORMULAS_ARCHIVE}"
 
     # Enable formulas
-    print_step "Enable formulas"
+    print_sub_step "Enable formulas"
 
     echo "file_roots:" > "${FORMULA_CONFIG}"
     echo "  user:" >> "${FORMULA_CONFIG}"
@@ -272,23 +277,23 @@ if [[ "${sync_formulas}" == true ]]; then
 fi
 
 if [[ "${sync_states}" == true ]]; then
-    print_info "Syncing states"
+    print_step "Syncing states"
 
     # Create states folder if needed
     mkdir -p "${STATES_DST_DIR}"
 
     # Disable states
-    print_step "Disable states"
+    print_sub_step "Disable states"
 
     qubesctl top.disable "${SALT_ROOT}"
 
     # Clean up states
-    print_step "Clean states"
+    print_sub_step "Clean states"
 
     rm -fr "${STATES_DST_DIR}/${SALT_ROOT}"
 
     # Retrieve states
-    print_step "Retrieve states"
+    print_sub_step "Retrieve states"
 
     STATES_SRC_DIR="${SRC_DIR}/${STATES_FOLDER}"
     STATES_ARCHIVE="${STATES_DST_DIR}/${SALT_ROOT}.tgz"
@@ -297,7 +302,7 @@ if [[ "${sync_states}" == true ]]; then
     tar xzf "${STATES_ARCHIVE}" -C "${STATES_DST_DIR}" && rm "${STATES_ARCHIVE}"
 
     # Enable states
-    print_step "Enable states"
+    print_sub_step "Enable states"
 
     qubesctl top.enable "${SALT_ROOT}"
 
