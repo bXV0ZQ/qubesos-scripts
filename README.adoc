@@ -1,0 +1,54 @@
+= My QubesOS scripts
+:toc:
+
+This repository regroups usefull scripts I developed in order to customize my Qubes OS installation.
+
+== sync-salt-dom0-from-vm.sh
+
+This script is used to synchronize pillars, formulas and states from a virtual machine to `dom0`.
+
+=== !!! WARNING !!! - Using this script could compromise/corrupt dom0
+
+`dom0` is isolated from anything else and has no easy way to transfer stuff from a VM for a very good reason:
+
+> A compromise of `dom0` implies a compromise of the entire system.
+
+See https://www.qubes-os.org/doc/copy-from-dom0/#copying-to-dom0 for more details.
+
+You should verify twice what you will copy to `dom0` and copy from a VM as safe as possible (disposable VM can be an option).
+
+BEWARE this sync script pushes some entire folders hierarchy to `dom0`.
+
+=== What does sync script do
+
+Sync script pulls pillars, formulas and states from source domain `<domain>` to `dom0` respective folders `/srv/user_pillar`, `/srv/user_formulas` and `/srv/user-salt`.
+
+Regarding pillars and states, `myq` folder is recursively copied (i.e. children are included) from respective source folders `qubesos-pillars` and `qubesos-states`.
+
+Regarding formulas, the `myq` folder, if any, is recursivelt copied (i.e. children are included) from every folder ending with `-formula` in source folder `qubesos-formulas`.
+
+=== Deploy sync script
+
+Move sync script to `dom0` by executing following command in `dom0` after replacing ${SRC_VM} and ${SRC_DIR} as per your environment:
+
+[source, bash]
+--------
+qvm-run --pass-io ${SRC_VM} "cat ${SRC_DIR}/sync-salt-dom0-from.sh" > sync-salt-dom0-from.sh
+chmod u+x sync-salt-dom0-from.sh
+--------
+
+=== Use sync script
+
+Just execute the script with root privileges in `dom0`:
+
+[source, bash]
+--------
+sudo ./sync-salt-dom0-from.sh <source-domain>
+--------
+
+Get help:
+
+[source, bash]
+--------
+sudo ./sync-salt-dom0-from.sh -h
+--------
