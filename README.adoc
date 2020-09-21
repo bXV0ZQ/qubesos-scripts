@@ -1,5 +1,7 @@
 = My QubesOS scripts
-:toc:
+:toc: preamble
+:toclevels: 1
+:toc-title: Scripts:
 
 This repository regroups usefull scripts I developed in order to customize my Qubes OS installation.
 
