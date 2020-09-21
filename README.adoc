@@ -23,7 +23,7 @@ BEWARE this sync script pushes some entire folders hierarchy to `dom0`.
 
 === What does sync script do
 
-Sync script pulls pillars, formulas and states from source domain `<domain>` to `dom0` respective folders `/srv/user_pillar`, `/srv/user_formulas` and `/srv/user-salt`.
+Sync script pulls pillars, formulas and states from source domain `<domain>` to `dom0` respective folders `/srv/user_pillar`, `/srv/user_formulas` and `/srv/user_salt`.
 
 Regarding pillars and states, `myq` folder is recursively copied (i.e. children are included) from respective source folders `qubesos-pillars` and `qubesos-states`.
 
