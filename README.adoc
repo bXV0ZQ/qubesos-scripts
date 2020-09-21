@@ -31,7 +31,7 @@ Regarding formulas, the `myq` folder, if any, is recursivelt copied (i.e. childr
 
 === Deploy sync script
 
-Move sync script to `dom0` by executing following command in `dom0` after replacing ${SRC_VM} and ${SRC_DIR} as per your environment:
+Move sync script to `dom0` by executing following command in `dom0` after replacing `${SRC_VM}` and `${SRC_DIR}` as per your environment:
 
 [source, bash]
 --------
