@@ -19,11 +19,11 @@ declare -r DEF_SRC_DIR="/home/user/Documents"
 # Configuration
 declare -r SALT_CONF_FOLDER="/etc/salt"
 declare -r PILLARS_FOLDER="qubesos-pillars"
-declare -r PILLARS_DST_DIR="/srv/user_pillar"
+declare -r PILLARS_DST_BASE_DIR="/srv/pillar"
 declare -r FORMULAS_FOLDER="qubesos-formulas"
-declare -r FORMULAS_DST_DIR="/srv/user_formulas"
+declare -r FORMULAS_DST_BASE_DIR="/srv/formulas"
 declare -r STATES_FOLDER="qubesos-states"
-declare -r STATES_DST_DIR="/srv/user_salt"
+declare -r STATES_DST_BASE_DIR="/srv/salt"
 
 #
 # UTILS
@@ -67,7 +67,7 @@ usage () {
     read -r -d '' USAGE << EOM
 \n    Usage: ${SCRIPT_NAME} <domain> [-o <object_type>] [-r <salt_root>] [-s <source>]
 
-    Copy ${YELLOW}pillars${END}, ${YELLOW}formulas${END} and/or ${YELLOW}states${END} from ${BOLD}<domain>${END} to dom0
+    Copy ${YELLOW}pillars${END}, ${YELLOW}formulas${END} and/or ${YELLOW}states${END} from ${BOLD}<domain>${END} to dom0 then enable them.
 
     Parameters:
         ${BOLD}<domain>${END} must be a valid and started AppVM, as safe as possible
@@ -209,7 +209,7 @@ if [[ "${sync_pillars}" == true ]]; then
     print_step "Syncing pillars"
 
     # Create pillars folder if needed
-    mkdir -p "${PILLARS_DST_DIR}"
+    mkdir -p "${PILLARS_DST_BASE_DIR}"
 
     # Disable pillars
     print_sub_step "Disable pillars"
@@ -219,16 +219,16 @@ if [[ "${sync_pillars}" == true ]]; then
     # Clean up pillars
     print_sub_step "Clean pillars"
 
-    rm -fr "${PILLARS_DST_DIR}/${SALT_ROOT}"
+    rm -fr "${PILLARS_DST_BASE_DIR}/${SALT_ROOT}"
 
     # Retrieve pillars
     print_sub_step "Retrieve pillars"
 
     PILLARS_SRC_DIR="${SRC_DIR}/${PILLARS_FOLDER}"
-    PILLARS_ARCHIVE="${PILLARS_DST_DIR}/${SALT_ROOT}.tgz"
+    PILLARS_ARCHIVE="${PILLARS_DST_BASE_DIR}/${SALT_ROOT}.tgz"
 
     qvm-run --pass-io ${QDOMAIN} "tar czf - -C ${PILLARS_SRC_DIR} ${SALT_ROOT}" > "${PILLARS_ARCHIVE}"
-    tar xzf "${PILLARS_ARCHIVE}" -C "${PILLARS_DST_DIR}" && rm "${PILLARS_ARCHIVE}"
+    tar xzf "${PILLARS_ARCHIVE}" -C "${PILLARS_DST_BASE_DIR}" && rm "${PILLARS_ARCHIVE}"
 
     # Enable pillars
     print_sub_step "Enable pillars"
@@ -241,10 +241,11 @@ if [[ "${sync_formulas}" == true ]]; then
     print_step "Syncing formulas"
 
     # Create formulas folder if needed
-    mkdir -p "${FORMULAS_DST_DIR}"
+    mkdir -p "${FORMULAS_DST_BASE_DIR}"
 
-    # Prepare file_root configuration
-    FORMULA_CONFIG="${SALT_CONF_FOLDER}/minion.d/${SALT_ROOT}.conf"
+    # Prepare formulas folder and configuration file
+    FORMULAS_DST_DIR="${FORMULAS_DST_BASE_DIR}/${SALT_ROOT}"
+    FORMULAS_CONFIG="${SALT_CONF_FOLDER}/minion.d/${SALT_ROOT}.conf"
 
     # Disable formulas
     print_sub_step "Disable formulas"
@@ -254,7 +255,8 @@ if [[ "${sync_formulas}" == true ]]; then
     # Clean up formulas
     print_sub_step "Clean formulas"
 
-    rm -fr "${FORMULAS_DST_DIR}/${SALT_ROOT}"
+    rm -fr "${FORMULAS_DST_DIR}"
+    mkdir -p "${FORMULAS_DST_DIR}"
 
     # Retrieve formulas
     print_sub_step "Retrieve formulas"
@@ -268,10 +270,10 @@ if [[ "${sync_formulas}" == true ]]; then
     # Enable formulas
     print_sub_step "Enable formulas"
 
-    echo "file_roots:" > "${FORMULA_CONFIG}"
-    echo "  user:" >> "${FORMULA_CONFIG}"
+    echo "file_roots:" > "${FORMULAS_CONFIG}"
+    echo "  base:" >> "${FORMULAS_CONFIG}"
     for formula in ${FORMULAS_DST_DIR}/*; do
-    echo "    - ${formula}" >> "${FORMULA_CONFIG}"
+    echo "    - ${formula}" >> "${FORMULAS_CONFIG}"
     done
 
 fi
@@ -280,7 +282,7 @@ if [[ "${sync_states}" == true ]]; then
     print_step "Syncing states"
 
     # Create states folder if needed
-    mkdir -p "${STATES_DST_DIR}"
+    mkdir -p "${STATES_DST_BASE_DIR}"
 
     # Disable states
     print_sub_step "Disable states"
@@ -290,16 +292,16 @@ if [[ "${sync_states}" == true ]]; then
     # Clean up states
     print_sub_step "Clean states"
 
-    rm -fr "${STATES_DST_DIR}/${SALT_ROOT}"
+    rm -fr "${STATES_DST_BASE_DIR}/${SALT_ROOT}"
 
     # Retrieve states
     print_sub_step "Retrieve states"
 
     STATES_SRC_DIR="${SRC_DIR}/${STATES_FOLDER}"
-    STATES_ARCHIVE="${STATES_DST_DIR}/${SALT_ROOT}.tgz"
+    STATES_ARCHIVE="${STATES_DST_BASE_DIR}/${SALT_ROOT}.tgz"
 
     qvm-run --pass-io ${QDOMAIN} "tar czf - -C ${STATES_SRC_DIR} ${SALT_ROOT}" > "${STATES_ARCHIVE}"
-    tar xzf "${STATES_ARCHIVE}" -C "${STATES_DST_DIR}" && rm "${STATES_ARCHIVE}"
+    tar xzf "${STATES_ARCHIVE}" -C "${STATES_DST_BASE_DIR}" && rm "${STATES_ARCHIVE}"
 
     # Enable states
     print_sub_step "Enable states"

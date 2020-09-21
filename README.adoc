@@ -23,11 +23,15 @@ BEWARE this sync script pushes some entire folders hierarchy to `dom0`.
 
 === What does sync script do
 
-Sync script pulls pillars, formulas and states from source domain `<domain>` to `dom0` respective folders `/srv/user_pillar`, `/srv/user_formulas` and `/srv/user_salt`.
+Sync script pulls pillars, formulas and states from source domain `<domain>` to `dom0`.
+Pillars, formulas and states must all be part of the `base` salt environment to take advantage of the built-in modules and formulas.
 
 Regarding pillars and states, `myq` folder is recursively copied (i.e. children are included) from respective source folders `qubesos-pillars` and `qubesos-states`.
+They are pushed to folders `/srv/pillar` and `/srv/salt` respectively to make sure they will be loaded in `base` salt environment with the built-in Qubes OS salt configuration.
 
-Regarding formulas, the `myq` folder, if any, is recursivelt copied (i.e. children are included) from every folder ending with `-formula` in source folder `qubesos-formulas`.
+Regarding formulas, the `myq` folder, if any, is recursively copied (i.e. children are included) from every folder ending with `-formula` in source folder `qubesos-formulas`.
+`-formula` folder is included in the copy with only the `myq` folder in it so formula won't be copied unless it contain the expected `myq` folder.
+They are pushed to folder `/srv/formulas/myq` and the generated configuration loads them in the `base` salt environment.
 
 === Deploy sync script
 
