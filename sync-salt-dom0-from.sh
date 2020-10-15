@@ -86,7 +86,7 @@ usage () {
             Must start by an alphabetic character
         
         -s|--source ${BOLD}<source>${END}
-            The path to pillars and formulas folders on domain ${BOLD}<domain>${END} (default: '${SRC_DIR}')
+            The path to pillars, formulas and states folders on domain ${BOLD}<domain>${END} (default: '${SRC_DIR}')
             Limited to alphanumeric, '.', '-', '_', ' ' and '/' characters
             Must start by a '/' character (absolute path)
     
@@ -197,7 +197,7 @@ esac
 [[ "${SALT_ROOT}" =~ [^a-zA-Z0-9_.-]+ ]] && print_error "Invalid salt root (bad characters): '${SALT_ROOT}'" && usage && exit 1
 [[ "${SALT_ROOT}" =~ ^[^a-zA-Z] ]] && print_error "Invalid salt root (bad starting character): '${SALT_ROOT}'" && usage && exit 1
 
-# Validation SRC_DIR
+# Validate SRC_DIR
 [[ "${SRC_DIR}" =~ [^a-zA-Z0-9\ /_.-]+ ]] && print_error "Invalid source (bad characters): '${SRC_DIR}'" && usage && exit 1
 [[ "${SRC_DIR}" =~ ^[^/] ]] && print_error "Invalid source (bad starting character): '${SRC_DIR}'" && usage && exit 1
 
